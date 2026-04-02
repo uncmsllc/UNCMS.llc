@@ -1,0 +1,13 @@
+{
+  "name": "uncms-website",
+  "version": "1.0.0",
+  "description": "Unique Nursing Care Management Services — local dev tooling",
+  "type": "module",
+  "scripts": {
+    "serve": "node serve.mjs",
+    "screenshot": "node screenshot.mjs"
+  },
+  "dependencies": {
+    "puppeteer": "^24.15.0"
+  }
+}

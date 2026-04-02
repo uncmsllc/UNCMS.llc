@@ -1,0 +1,11 @@
+# Dependencies
+node_modules/
+
+# macOS
+.DS_Store
+
+# Dev tooling output
+temporary screenshots/
+
+# Environment variables
+.env
