@@ -1261,6 +1261,133 @@
     }
     .footer-legal a:hover { color: rgba(255,255,255,0.7); }
 
+    /* ─── LEGAL MODAL ───────────────────────────────── */
+    .legal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(0,0,0,0.65);
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .legal-overlay.open { display: flex; }
+    .legal-modal {
+      background: #fff;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 780px;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.28);
+      overflow: hidden;
+    }
+    .legal-modal-header {
+      position: relative;
+      background: var(--charcoal);
+      padding: 20px 28px 0;
+      flex-shrink: 0;
+    }
+    .legal-modal-title {
+      color: white;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      opacity: 0.55;
+    }
+    .legal-tabs {
+      display: flex;
+      gap: 4px;
+      list-style: none;
+    }
+    .legal-tab {
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      border-radius: 6px 6px 0 0;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      letter-spacing: 0.02em;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+    }
+    .legal-tab:hover { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); }
+    .legal-tab.active { background: #fff; color: var(--charcoal); }
+    .legal-close {
+      position: absolute;
+      top: 16px; right: 20px;
+      font-size: 26px;
+      line-height: 1;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: inherit;
+      transition: color 0.2s;
+    }
+    .legal-close:hover { color: white; }
+    .legal-modal-body {
+      overflow-y: auto;
+      padding: 32px 28px 36px;
+      flex: 1;
+    }
+    .legal-panel { display: none; }
+    .legal-panel.active { display: block; }
+    .legal-panel h2 {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--charcoal);
+      margin-bottom: 4px;
+    }
+    .legal-panel .legal-date {
+      font-size: 12px;
+      color: var(--mid-gray);
+      margin-bottom: 24px;
+      font-weight: 600;
+    }
+    .legal-panel h3 {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--charcoal);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 24px 0 8px;
+      padding-left: 10px;
+      border-left: 3px solid var(--red);
+    }
+    .legal-panel p, .legal-panel li {
+      font-size: 14px;
+      color: var(--dark-gray);
+      line-height: 1.75;
+      margin-bottom: 8px;
+    }
+    .legal-panel ul {
+      padding-left: 20px;
+      margin-bottom: 8px;
+    }
+    .legal-panel a { color: var(--red); text-decoration: underline; text-underline-offset: 3px; }
+    .legal-contact-box {
+      margin-top: 28px;
+      background: var(--soft-blue);
+      border-left: 4px solid var(--red);
+      border-radius: 0 6px 6px 0;
+      padding: 16px 20px;
+    }
+    .legal-contact-box p { margin: 0; font-size: 14px; color: var(--dark-gray); line-height: 1.8; }
+    @media (max-width: 600px) {
+      .legal-modal-body { padding: 24px 18px 28px; }
+      .legal-modal-header { padding: 16px 18px 0; }
+      .legal-tab { padding: 8px 12px; font-size: 12px; }
+    }
+
     /* ─── SCROLL ANIMATIONS ──────────────────────────── */
     .fade-up {
       opacity: 0;
@@ -1377,9 +1504,21 @@
       .commitment-cards { grid-template-columns: 1fr 1fr; }
     }
 
+    @media (max-width: 768px) {
+      .crisis-bar {
+        font-size: 12px;
+        padding: 8px 16px;
+        line-height: 1.5;
+      }
+    }
+
     @media (max-width: 480px) {
       .commitment-cards { grid-template-columns: 1fr; }
       .hero-stats { flex-direction: column; gap: 20px; }
+      .crisis-bar {
+        font-size: 11px;
+        padding: 6px 12px;
+      }
     }
   </style>
 </head>
@@ -2036,9 +2175,9 @@
       <div class="footer-bottom">
         <p>© 2026 <span>Unique Nursing Care Management Services, LLC™</span>. All rights reserved.</p>
         <div class="footer-legal">
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Use</a>
-          <a href="#">Accessibility</a>
+          <a href="#" data-legal="privacy">Privacy Policy</a>
+          <a href="#" data-legal="terms">Terms of Use</a>
+          <a href="#" data-legal="access">Accessibility</a>
         </div>
       </div>
     </div>
@@ -2049,8 +2188,179 @@
     <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
   </div>
 
+  <!-- LEGAL MODAL -->
+  <div class="legal-overlay" id="legalOverlay" role="dialog" aria-modal="true" aria-labelledby="legalModalTitle">
+    <div class="legal-modal">
+      <div class="legal-modal-header">
+        <div class="legal-modal-title" id="legalModalTitle">UNCMS, LLC — Legal &amp; Accessibility</div>
+        <ul class="legal-tabs" role="tablist">
+          <li><button type="button" class="legal-tab active" role="tab" aria-selected="true"  data-panel="privacy">Privacy Policy</button></li>
+          <li><button type="button" class="legal-tab"        role="tab" aria-selected="false" data-panel="terms">Terms of Use</button></li>
+          <li><button type="button" class="legal-tab"        role="tab" aria-selected="false" data-panel="access">Accessibility</button></li>
+        </ul>
+        <button type="button" class="legal-close" id="legalClose" aria-label="Close">&times;</button>
+      </div>
+      <div class="legal-modal-body">
+
+        <!-- PRIVACY POLICY -->
+        <div class="legal-panel active" id="panel-privacy" role="tabpanel">
+          <h2>Privacy Policy</h2>
+          <p class="legal-date">Effective Date: April 2, 2026</p>
+          <p>Unique Nursing Care Management Services, LLC ("UNCMS," "we," "us," or "our") is committed to protecting your privacy in accordance with the <strong>Maryland Personal Information Protection Act</strong> (Md. Code Ann., Com. Law §§ 14-3501 et seq.), the <strong>Health Insurance Portability and Accountability Act (HIPAA)</strong>, and applicable federal law.</p>
+
+          <h3>1. Information We Collect</h3>
+          <ul>
+            <li>Contact details you voluntarily submit — name, phone number, email address.</li>
+            <li>Health-related inquiries submitted through our contact or admission form.</li>
+            <li>Website usage data — cookies, IP addresses, browser type, and pages visited.</li>
+          </ul>
+
+          <h3>2. How We Use Your Information</h3>
+          <ul>
+            <li>To respond to inquiries and admission requests.</li>
+            <li>To provide care coordination and referral services.</li>
+            <li>To comply with legal, regulatory, and licensing obligations.</li>
+            <li>We do <strong>not</strong> sell, rent, or share your personal information with third parties for marketing purposes.</li>
+          </ul>
+
+          <h3>3. HIPAA &amp; Medical Confidentiality</h3>
+          <p>As a healthcare-related organization, any Protected Health Information (PHI) you provide is handled in strict accordance with HIPAA and the <strong>Maryland Confidentiality of Medical Records Act</strong> (Md. Code Ann., Health-Gen. §§ 4-301 et seq.). A separate Notice of Privacy Practices is provided at the time of admission.</p>
+
+          <h3>4. Data Security</h3>
+          <p>We implement appropriate administrative, technical, and physical safeguards to protect your personal information as required by Md. Code Ann., Com. Law § 14-3503. Access to personal data is limited to authorized personnel on a need-to-know basis.</p>
+
+          <h3>5. Data Breach Notification</h3>
+          <p>In the event of a security breach involving personal information, we will notify affected individuals as required by the <strong>Maryland Personal Information Protection Act</strong>, Md. Code Ann., Com. Law § 14-3504, generally within 45 days of discovery.</p>
+
+          <h3>6. Your Rights as a Maryland Resident</h3>
+          <ul>
+            <li>Access personal information we hold about you.</li>
+            <li>Request correction of inaccurate information.</li>
+            <li>Request deletion of personal information, subject to applicable legal retention requirements.</li>
+            <li>Opt out of any non-essential data sharing.</li>
+          </ul>
+
+          <h3>7. Cookies &amp; Tracking</h3>
+          <p>Our website may use cookies and similar technologies for functionality and analytics. You may disable cookies through your browser settings without affecting access to the site.</p>
+
+          <h3>8. Children's Privacy</h3>
+          <p>Our website is not directed to individuals under the age of 18. We do not knowingly collect personal information from minors.</p>
+
+          <h3>9. Changes to This Policy</h3>
+          <p>We may update this Privacy Policy periodically. Material changes will be posted on this page with a revised effective date.</p>
+
+          <div class="legal-contact-box">
+            <p><strong>Privacy Inquiries:</strong><br>
+            UNCMS, LLC &nbsp;|&nbsp; 620 Germania Circle, Salisbury, MD 21801<br>
+            Phone: <a href="tel:4107265696">410-726-5696</a> &nbsp;|&nbsp; Email: <a href="mailto:info@uncms.org">info@uncms.org</a></p>
+          </div>
+        </div>
+
+        <!-- TERMS OF USE -->
+        <div class="legal-panel" id="panel-terms" role="tabpanel">
+          <h2>Terms of Use</h2>
+          <p class="legal-date">Last Updated: April 2, 2026</p>
+          <p>By accessing or using the UNCMS, LLC website (<strong>uncms.llc</strong>), you agree to be bound by these Terms of Use. If you do not agree, please discontinue use of this site.</p>
+
+          <h3>1. Governing Law</h3>
+          <p>These Terms are governed by and construed in accordance with the laws of the <strong>State of Maryland</strong>, without regard to its conflict of law principles. Any disputes shall be resolved in the courts of Wicomico County, Maryland.</p>
+
+          <h3>2. Informational Purposes Only</h3>
+          <p>All content on this website is provided for <strong>general informational purposes only</strong> and does not constitute medical advice, diagnosis, or treatment. Always seek the advice of a qualified healthcare provider for medical questions. In a medical emergency, call <strong>911</strong> immediately.</p>
+
+          <h3>3. Crisis &amp; Emergency Resources</h3>
+          <p>This website is <strong>not monitored 24/7</strong> for emergency communications. If you or someone you know is in immediate danger or experiencing a mental health crisis:</p>
+          <ul>
+            <li>Call <strong>911</strong> for emergencies.</li>
+            <li>Call or text <strong>988</strong> (Suicide &amp; Crisis Lifeline).</li>
+            <li>Call the Maryland Crisis Hotline: <strong>1-800-422-0009</strong>.</li>
+          </ul>
+
+          <h3>4. Intellectual Property</h3>
+          <p>All content, logos, text, graphics, and materials on this site are the property of UNCMS, LLC and are protected under Maryland and federal intellectual property law. Unauthorized reproduction, distribution, or modification is strictly prohibited.</p>
+
+          <h3>5. No Guarantee of Outcomes</h3>
+          <p>Recovery is a personal journey. Nothing on this website guarantees specific treatment results, timelines, or outcomes. Individual results vary based on many factors.</p>
+
+          <h3>6. Limitation of Liability</h3>
+          <p>To the fullest extent permitted by Maryland law, UNCMS, LLC shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of, or inability to use, this website or its content.</p>
+
+          <h3>7. Third-Party Links</h3>
+          <p>This site may contain links to third-party websites for your convenience. UNCMS, LLC is not responsible for the content, accuracy, or privacy practices of those external sites.</p>
+
+          <h3>8. Compliance with Maryland Law</h3>
+          <p>UNCMS, LLC operates in compliance with all applicable Maryland Department of Health (MDH) regulations governing substance use disorder treatment programs, including COMAR Title 10, Subtitle 47.</p>
+
+          <h3>9. Changes to These Terms</h3>
+          <p>We reserve the right to update these Terms at any time. Continued use of the site following any changes constitutes your acceptance of the revised Terms.</p>
+
+          <div class="legal-contact-box">
+            <p><strong>Questions about these Terms:</strong><br>
+            UNCMS, LLC &nbsp;|&nbsp; 620 Germania Circle, Salisbury, MD 21801<br>
+            Phone: <a href="tel:4107265696">410-726-5696</a> &nbsp;|&nbsp; Email: <a href="mailto:info@uncms.org">info@uncms.org</a></p>
+          </div>
+        </div>
+
+        <!-- ACCESSIBILITY -->
+        <div class="legal-panel" id="panel-access" role="tabpanel">
+          <h2>Accessibility Statement</h2>
+          <p class="legal-date">Effective Date: April 2, 2026</p>
+          <p>UNCMS, LLC is committed to ensuring digital accessibility for all individuals, including people with disabilities. We actively work to increase the accessibility and usability of our website in conformance with the following standards:</p>
+          <ul>
+            <li><strong>Americans with Disabilities Act (ADA)</strong>, 42 U.S.C. § 12101 et seq.</li>
+            <li><strong>Section 508</strong> of the Rehabilitation Act of 1973 (29 U.S.C. § 794d).</li>
+            <li><strong>Maryland Accessibility Law</strong> (Md. Code Ann., State Gov't § 7-801 et seq.).</li>
+            <li><strong>Web Content Accessibility Guidelines (WCAG) 2.1, Level AA</strong>.</li>
+          </ul>
+
+          <h3>Our Accessibility Features</h3>
+          <ul>
+            <li>Semantic HTML with a logical heading hierarchy (H1–H4).</li>
+            <li>Descriptive alt text on all meaningful images.</li>
+            <li>Color contrast ratios meeting the WCAG 2.1 AA minimum of 4.5:1 for body text.</li>
+            <li>Full keyboard navigation support throughout the site.</li>
+            <li>Text that resizes up to 200% without loss of content or functionality.</li>
+            <li>ARIA labels and roles on interactive components.</li>
+            <li>Focus indicators visible on all focusable elements.</li>
+          </ul>
+
+          <h3>Known Limitations</h3>
+          <p>We are continuously auditing and improving our site. Some older content or embedded third-party tools may not yet fully meet WCAG 2.1 AA standards. We are committed to addressing these gaps promptly.</p>
+
+          <h3>Alternative Formats</h3>
+          <p>If you require information in an alternative accessible format — including large print, audio description, or plain-text versions — please contact us and we will accommodate your request consistent with ADA requirements, typically within <strong>2 business days</strong>.</p>
+
+          <h3>Report an Accessibility Barrier</h3>
+          <p>If you encounter an accessibility barrier on our website, please let us know. Your feedback helps us improve.</p>
+
+          <div class="legal-contact-box">
+            <p><strong>Accessibility Contact:</strong><br>
+            UNCMS, LLC &nbsp;|&nbsp; 620 Germania Circle, Salisbury, MD 21801<br>
+            Phone: <a href="tel:4107265696">410-726-5696</a><br>
+            Home to Business: <a href="tel:4102191018">410-219-1018</a><br>
+            Email: <a href="mailto:info@uncms.org">info@uncms.org</a><br><br>
+            <strong>Maryland State Resource:</strong> Maryland Department of Disabilities —
+            <a href="https://mdod.maryland.gov" target="_blank" rel="noopener">mdod.maryland.gov</a></p>
+          </div>
+        </div>
+
+      </div><!-- /.legal-modal-body -->
+    </div><!-- /.legal-modal -->
+  </div><!-- /.legal-overlay -->
+
   <!-- SCRIPTS -->
   <script>
+    // Sync navbar top + hero padding to actual crisis bar height
+    const crisisBar = document.querySelector('.crisis-bar');
+    function syncOffsets() {
+      const barH = crisisBar ? crisisBar.offsetHeight : 44;
+      document.getElementById('navbar').style.top = barH + 'px';
+      const hero = document.getElementById('hero');
+      if (hero) hero.style.paddingTop = (barH + 88) + 'px';
+    }
+    syncOffsets();
+    window.addEventListener('resize', syncOffsets);
+
     // Navbar scroll effect
     const navbar = document.getElementById('navbar');
     const backTop = document.getElementById('back-top');
@@ -2105,6 +2415,43 @@
         }
       });
     });
+
+    // Legal modal — tab switching & open/close
+    const legalOverlay = document.getElementById('legalOverlay');
+    const legalClose   = document.getElementById('legalClose');
+
+    function openLegal(panel) {
+      document.querySelectorAll('.legal-tab').forEach(btn => {
+        const isActive = btn.dataset.panel === panel;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+      document.querySelectorAll('.legal-panel').forEach(p => {
+        p.classList.toggle('active', p.id === 'panel-' + panel);
+      });
+      legalOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLegal() {
+      legalOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('[data-legal]').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        openLegal(link.dataset.legal);
+      });
+    });
+
+    document.querySelectorAll('.legal-tab').forEach(btn => {
+      btn.addEventListener('click', () => openLegal(btn.dataset.panel));
+    });
+
+    legalClose.addEventListener('click', closeLegal);
+    legalOverlay.addEventListener('click', e => { if (e.target === legalOverlay) closeLegal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLegal(); });
 
     // Form submit handler (placeholder)
     function handleSubmit(e) {

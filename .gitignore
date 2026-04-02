@@ -9,3 +9,4 @@ temporary screenshots/
 
 # Environment variables
 .env
+.vercel
