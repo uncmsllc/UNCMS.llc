@@ -1940,7 +1940,7 @@
       </blockquote>
       <cite>— Unique Nursing Care Management Services, LLC™</cite>
       <div class="quote-owner-meta">
-        <div class="quote-owner-name">Mrs. Candice</div>
+        <div class="quote-owner-name">Mrs. Candice Deshields Pinkett, DSN, RN, DN/CN</div>
         <div class="quote-owner-title">Founder &amp; Owner, UNCMS, LLC</div>
         <div class="quote-owner-contact">
           <div>Cell: <a href="tel:4107265696">410-726-5696</a></div>
@@ -2453,14 +2453,46 @@
     legalOverlay.addEventListener('click', e => { if (e.target === legalOverlay) closeLegal(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLegal(); });
 
-    // Form submit handler (placeholder)
-    function handleSubmit(e) {
+    // ── Contact form → Google Workspace Calendar ─────────────────────────
+    // Paste your deployed Apps Script URL here after following the setup steps
+    // in tools/form-handler.gs
+    const APPS_SCRIPT_URL = 'https://script.google.com/a/macros/uncms.org/s/AKfycbw_o29OZCe7hF61ffvyY8As0gDygePvOCFlUDyxd1lKpDk91vNhdQFiOnsXNKzKzePz/exec';
+
+    async function handleSubmit(e) {
       e.preventDefault();
-      const btn = e.target.querySelector('.form-submit');
-      btn.textContent = 'Message Sent — We\'ll Be in Touch!';
-      btn.style.background = '#198754';
-      btn.style.borderColor = '#198754';
+      const form = e.target;
+      const btn  = form.querySelector('.form-submit');
+      const orig = btn.textContent;
+
+      const data = {
+        fname:   form.fname.value.trim(),
+        lname:   form.lname.value.trim(),
+        phone:   form.phone.value.trim(),
+        email:   form.email.value.trim(),
+        inquiry: form.inquiry.value,
+        message: form.message.value.trim()
+      };
+
+      btn.textContent = 'Sending\u2026';
       btn.disabled = true;
+
+      try {
+        const res    = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) });
+        const result = await res.json();
+
+        if (result.success) {
+          btn.textContent = 'Message Sent \u2014 We\'ll Be in Touch!';
+          btn.style.background   = '#198754';
+          btn.style.borderColor  = '#198754';
+          form.reset();
+        } else {
+          throw new Error(result.error || 'Submission failed');
+        }
+      } catch (err) {
+        btn.textContent = orig;
+        btn.disabled    = false;
+        alert('There was an issue sending your message. Please call us directly at (443) 783-9001.');
+      }
     }
   </script>
 </body>
