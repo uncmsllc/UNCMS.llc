@@ -1,29 +1,52 @@
 /**
  * UNCMS LLC — Contact Form Handler
  * Deploy this as a Google Apps Script Web App.
- *
- * What it does:
- *   1. Receives form submissions from the website
- *   2. Creates a follow-up calendar event on your Google Calendar
- *   3. Sends you an email notification with the inquiry details
- *
- * Setup instructions are at the bottom of this file.
  */
 
-// ── CONFIG ─────────────────────────────────────────────────────────────────
-// The email address that receives inquiry notifications.
-// Defaults to your Google account email. Change this if you want notifications
-// sent to a different address (e.g., an admin inbox).
-const NOTIFICATION_EMAIL = 'info@uncms.com';
-
-// How many business days out to schedule the follow-up reminder.
-// 1 = next business day (recommended for intake inquiries)
-const FOLLOWUP_DAYS_OUT = 1;
-
-// What time the follow-up event appears on your calendar (24h format)
-const FOLLOWUP_HOUR = 9;   // 9 = 9:00 AM
+// ── CONFIG ────────────────────────────────────────────────────────────────
+const NOTIFICATION_EMAIL       = 'info@uncms.com';
+const FOLLOWUP_DAYS_OUT        = 1;   // next business day
+const FOLLOWUP_HOUR            = 9;   // 9:00 AM
 const FOLLOWUP_DURATION_MINUTES = 30;
-// ───────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────
+
+
+/**
+ * RUN THIS FIRST from the Apps Script editor (select testSetup → Run).
+ * It authorizes Gmail + Calendar and sends a real test email + creates a
+ * test calendar event so you can confirm everything is wired up correctly.
+ */
+function testSetup() {
+  try {
+    // ── Test Calendar ───────────────────────────────────────────────────
+    const calendar  = CalendarApp.getDefaultCalendar();
+    const now       = new Date();
+    const testStart = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour from now
+    const testEnd   = new Date(testStart.getTime() + 30 * 60 * 1000);
+
+    calendar.createEvent(
+      'TEST — UNCMS Form Handler (safe to delete)',
+      testStart,
+      testEnd,
+      { description: 'This event was created to verify the UNCMS form handler can write to Google Calendar. Safe to delete.' }
+    );
+    Logger.log('✅ Calendar: test event created successfully');
+
+    // ── Test Email ──────────────────────────────────────────────────────
+    GmailApp.sendEmail(
+      NOTIFICATION_EMAIL,
+      'TEST — UNCMS Form Handler is connected',
+      'This is a test email confirming the UNCMS contact form is successfully linked to Google Workspace.\n\nYou can ignore this message.'
+    );
+    Logger.log('✅ Email: test message sent to ' + NOTIFICATION_EMAIL);
+
+    Logger.log('✅ Setup complete. Both Calendar and Gmail are authorized and working.');
+
+  } catch (err) {
+    Logger.log('❌ Error during testSetup: ' + err.message);
+    throw err;
+  }
+}
 
 
 /**
@@ -31,10 +54,12 @@ const FOLLOWUP_DURATION_MINUTES = 30;
  */
 function doPost(e) {
   try {
-    const data = JSON.parse(e.postData.contents);
+    const raw  = e.postData ? e.postData.contents : '{}';
+    const data = JSON.parse(raw);
+    Logger.log('doPost received: ' + raw);
+
     const submittedAt = new Date();
 
-    // Build a human-readable label for the inquiry type
     const inquiryLabels = {
       self:   'Themselves',
       family: 'A Family Member',
@@ -44,57 +69,56 @@ function doPost(e) {
     };
     const inquiryLabel = inquiryLabels[data.inquiry] || data.inquiry || 'Not specified';
 
-    // ── 1. Create calendar follow-up event ───────────────────────────────
-    const calendar = CalendarApp.getDefaultCalendar();
+    // ── 1. Calendar event ────────────────────────────────────────────────
+    const calendar   = CalendarApp.getDefaultCalendar();
     const eventStart = getFollowupDate(submittedAt, FOLLOWUP_DAYS_OUT);
     eventStart.setHours(FOLLOWUP_HOUR, 0, 0, 0);
     const eventEnd = new Date(eventStart.getTime() + FOLLOWUP_DURATION_MINUTES * 60 * 1000);
 
-    const eventTitle = `Follow Up: ${data.fname} ${data.lname} — Inquiry`;
+    const eventTitle = 'Follow Up: ' + data.fname + ' ' + data.lname + ' — Inquiry';
     const eventDescription = [
-      '📋 NEW INQUIRY — UNCMS Website',
+      'NEW INQUIRY — UNCMS Website',
       '',
-      `Name:           ${data.fname} ${data.lname}`,
-      `Phone:          ${data.phone  || 'Not provided'}`,
-      `Email:          ${data.email  || 'Not provided'}`,
-      `Inquiring for:  ${inquiryLabel}`,
+      'Name:           ' + data.fname + ' ' + data.lname,
+      'Phone:          ' + (data.phone   || 'Not provided'),
+      'Email:          ' + (data.email   || 'Not provided'),
+      'Inquiring for:  ' + inquiryLabel,
       '',
       'Message:',
       data.message || '(No message provided)',
       '',
-      `Submitted: ${submittedAt.toLocaleString('en-US', { timeZone: 'America/New_York' })} ET`
+      'Submitted: ' + submittedAt.toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' ET'
     ].join('\n');
 
-    calendar.createEvent(eventTitle, eventStart, eventEnd, {
-      description: eventDescription
-    });
+    calendar.createEvent(eventTitle, eventStart, eventEnd, { description: eventDescription });
+    Logger.log('Calendar event created: ' + eventTitle);
 
-    // ── 2. Send email notification ────────────────────────────────────────
-    const emailSubject = `New Inquiry: ${data.fname} ${data.lname}`;
+    // ── 2. Email notification ────────────────────────────────────────────
+    const emailSubject = 'New Inquiry: ' + data.fname + ' ' + data.lname;
     const emailBody = [
       'A new inquiry was submitted through the UNCMS website.',
       '',
-      `Name:          ${data.fname} ${data.lname}`,
-      `Phone:         ${data.phone  || 'Not provided'}`,
-      `Email:         ${data.email  || 'Not provided'}`,
-      `Inquiring for: ${inquiryLabel}`,
+      'Name:          ' + data.fname + ' ' + data.lname,
+      'Phone:         ' + (data.phone   || 'Not provided'),
+      'Email:         ' + (data.email   || 'Not provided'),
+      'Inquiring for: ' + inquiryLabel,
       '',
       'Message:',
       data.message || '(No message provided)',
       '',
-      `Submitted: ${submittedAt.toLocaleString('en-US', { timeZone: 'America/New_York' })} ET`,
+      'Submitted: ' + submittedAt.toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' ET',
       '',
       '---',
       'A follow-up reminder has been added to your Google Calendar.'
     ].join('\n');
 
     GmailApp.sendEmail(NOTIFICATION_EMAIL, emailSubject, emailBody);
+    Logger.log('Email sent to ' + NOTIFICATION_EMAIL);
 
-    // ── 3. Return success ─────────────────────────────────────────────────
     return jsonResponse({ success: true });
 
   } catch (err) {
-    console.error('Form handler error:', err);
+    Logger.log('doPost error: ' + err.message);
     return jsonResponse({ success: false, error: err.message });
   }
 }
@@ -109,14 +133,14 @@ function getFollowupDate(fromDate, businessDaysOut) {
   while (added < businessDaysOut) {
     result.setDate(result.getDate() + 1);
     const day = result.getDay();
-    if (day !== 0 && day !== 6) added++; // skip Sunday (0) and Saturday (6)
+    if (day !== 0 && day !== 6) added++;
   }
   return result;
 }
 
 
 /**
- * Wraps a JSON object in a CORS-enabled text response.
+ * JSON response helper.
  */
 function jsonResponse(obj) {
   return ContentService
@@ -126,39 +150,40 @@ function jsonResponse(obj) {
 
 
 /**
- * Health-check endpoint — visit the deployed URL in a browser to confirm it's live.
+ * Health-check — open the /exec URL in a browser to confirm the script is live.
  */
 function doGet(e) {
   return jsonResponse({ status: 'UNCMS form handler is active.' });
 }
 
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  HOW TO DEPLOY THIS SCRIPT
-// ══════════════════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════════
+//  FIX — HOW TO AUTHORIZE & REDEPLOY
+// ══════════════════════════════════════════════════════════════════════════
 //
-//  1. Go to https://script.google.com — sign in with your Google Workspace account.
+//  The script must be authorized to use Gmail and Calendar before it will
+//  work from the live website. Follow these steps once:
 //
-//  2. Click "New project", paste the entire contents of this file, and save it
-//     (Ctrl+S / Cmd+S). Name the project "UNCMS Form Handler".
+//  1. Open https://script.google.com → open the "UNCMS Form Handler" project.
 //
-//  3. Click "Deploy" → "New deployment".
+//  2. Replace ALL the code with the contents of this file and save (Cmd+S).
+//
+//  3. In the function dropdown (top toolbar), select "testSetup".
+//     Click Run (▶). You will be prompted to review and grant permissions —
+//     click "Allow". This authorizes Gmail and Calendar.
+//
+//  4. Check the Execution Log (View → Logs). You should see:
+//       ✅ Calendar: test event created successfully
+//       ✅ Email: test message sent to info@uncms.com
+//       ✅ Setup complete.
+//     Also check your Google Calendar and info@uncms.com inbox to confirm.
+//
+//  5. Deploy → New deployment
 //     - Type: Web app
-//     - Execute as: Me (your Google account)
+//     - Execute as: Me
 //     - Who has access: Anyone
-//     Click "Deploy" and authorize the permissions when prompted.
+//     Click Deploy. Copy the new /exec URL.
 //
-//  4. Copy the "Web app URL" that appears (it looks like:
-//     https://script.google.com/macros/s/XXXXXXXXXXXX/exec)
+//  6. Update APPS_SCRIPT_URL in index.html with the new URL, then push to GitHub.
 //
-//  5. Open index.html and replace the placeholder:
-//        const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
-//     with your actual URL.
-//
-//  6. Test it: submit the contact form on the website. You should receive an
-//     email and see a calendar event appear on your Google Calendar.
-//
-//  IMPORTANT: Each time you edit this script, you must create a NEW deployment
-//  (Deploy → New deployment) — editing a deployment in place does not update
-//  the live version.
-// ══════════════════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════════
