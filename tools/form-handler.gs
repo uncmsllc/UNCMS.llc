@@ -14,7 +14,7 @@
 // The email address that receives inquiry notifications.
 // Defaults to your Google account email. Change this if you want notifications
 // sent to a different address (e.g., an admin inbox).
-const NOTIFICATION_EMAIL = Session.getActiveUser().getEmail();
+const NOTIFICATION_EMAIL = 'info@uncms.com';
 
 // How many business days out to schedule the follow-up reminder.
 // 1 = next business day (recommended for intake inquiries)
