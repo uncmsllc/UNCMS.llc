@@ -135,9 +135,9 @@
       box-shadow: 0 2px 24px rgba(0,0,0,0.10);
     }
     .nav-inner {
-      display: flex;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
       align-items: center;
-      justify-content: space-between;
       height: 76px;
     }
     .nav-logo {
@@ -170,11 +170,10 @@
     .nav-links {
       display: flex;
       align-items: center;
-      flex: 1;
-      justify-content: space-evenly;
-      padding: 0 24px;
+      justify-content: center;
+      gap: 28px;
       list-style: none;
-      gap: 0;
+      padding: 0;
     }
     .nav-links a {
       font-size: 14px;
