@@ -4,7 +4,7 @@
  */
 
 // ── CONFIG ────────────────────────────────────────────────────────────────
-const NOTIFICATION_EMAIL       = 'info@uncms.com';
+const NOTIFICATION_EMAIL       = 'info@uncms.org';
 const FOLLOWUP_DAYS_OUT        = 1;   // next business day
 const FOLLOWUP_HOUR            = 9;   // 9:00 AM
 const FOLLOWUP_DURATION_MINUTES = 30;
@@ -174,9 +174,9 @@ function doGet(e) {
 //
 //  4. Check the Execution Log (View → Logs). You should see:
 //       ✅ Calendar: test event created successfully
-//       ✅ Email: test message sent to info@uncms.com
+//       ✅ Email: test message sent to info@uncms.org
 //       ✅ Setup complete.
-//     Also check your Google Calendar and info@uncms.com inbox to confirm.
+//     Also check your Google Calendar and info@uncms.org inbox to confirm.
 //
 //  5. Deploy → New deployment
 //     - Type: Web app
