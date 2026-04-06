@@ -520,6 +520,42 @@
       border-radius: 50%;
       flex-shrink: 0;
     }
+    .about-program-badge {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      background: var(--soft-blue);
+      border: 1px solid var(--light-gray);
+      border-left: 4px solid var(--red);
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin-top: 28px;
+    }
+    .about-program-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--red);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      padding: 9px;
+    }
+    .about-program-icon svg { width: 100%; height: 100%; fill: white; }
+    .about-program-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--charcoal);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+    .about-program-desc {
+      font-size: 14px;
+      color: var(--dark-gray);
+      line-height: 1.6;
+    }
 
     /* ─── CORE VALUES ────────────────────────────────── */
     #values {
@@ -933,6 +969,169 @@
       text-underline-offset: 3px;
     }
     .quote-owner-contact a:hover { color: white; }
+
+    /* ─── TESTIMONIALS ───────────────────────────────── */
+    #testimonials {
+      padding: var(--section-pad);
+      background: var(--charcoal);
+      position: relative;
+      overflow: hidden;
+    }
+    #testimonials::before {
+      content: '\201C';
+      position: absolute;
+      right: 2%;
+      top: 0;
+      font-size: 400px;
+      font-family: Georgia, serif;
+      font-weight: 900;
+      color: rgba(224,54,78,0.08);
+      line-height: 1;
+      pointer-events: none;
+    }
+    .testimonials-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    .testimonials-header .section-title { color: var(--white); }
+    .testimonials-header .divider { margin: 0 auto 28px; }
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      margin-bottom: 56px;
+      position: relative;
+      z-index: 1;
+    }
+    .testimonial-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-left: 4px solid var(--red);
+      border-radius: 20px;
+      padding: 36px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+    .testimonial-card:hover {
+      background: rgba(255,255,255,0.11);
+      transform: translateY(-5px);
+      box-shadow: 0 16px 48px rgba(224,54,78,0.18);
+    }
+    .testimonial-stars {
+      display: flex;
+      gap: 4px;
+    }
+    .testimonial-stars span {
+      color: #FFD700;
+      font-size: 18px;
+    }
+    .testimonial-quote-mark {
+      font-size: 56px;
+      line-height: 0.6;
+      font-family: Georgia, serif;
+      color: var(--red);
+      opacity: 0.8;
+      margin-bottom: -8px;
+    }
+    .testimonial-text {
+      font-size: 15px;
+      color: rgba(255,255,255,0.88);
+      line-height: 1.75;
+      font-style: italic;
+      flex: 1;
+    }
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+    }
+    .testimonial-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      font-weight: 800;
+      color: white;
+      flex-shrink: 0;
+    }
+    .testimonial-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 2px;
+    }
+    .testimonial-role {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      font-weight: 600;
+    }
+    /* Review Links Bar */
+    .review-links-bar {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 36px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+    .review-links-text h3 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 6px;
+    }
+    .review-links-text p {
+      font-size: 14px;
+      color: rgba(255,255,255,0.55);
+    }
+    .review-links-buttons {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .review-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 24px;
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      white-space: nowrap;
+    }
+    .review-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+    .review-btn-leave {
+      background: var(--red);
+      color: white;
+    }
+    .review-btn-read {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+    }
+    .review-btn-read:hover {
+      background: rgba(255,255,255,0.16);
+    }
 
     /* ─── INSURANCE ──────────────────────────────────── */
     #insurance {
@@ -1483,6 +1682,7 @@
     @media (max-width: 1024px) {
       .values-grid { grid-template-columns: repeat(2, 1fr); }
       .approach-steps { grid-template-columns: 1fr 1fr; }
+      .testimonials-grid { grid-template-columns: 1fr 1fr; }
       .footer-grid { grid-template-columns: 1fr 1fr; }
     }
 
@@ -1498,6 +1698,7 @@
       .services-layout { grid-template-columns: 1fr; }
       .services-visual { display: none; }
       .approach-steps { grid-template-columns: 1fr; }
+      .testimonials-grid { grid-template-columns: 1fr; }
       .commitment-grid { grid-template-columns: 1fr; }
       .insurance-inner { grid-template-columns: 1fr; }
       .contact-inner { grid-template-columns: 1fr; }
@@ -1506,6 +1707,9 @@
       .trust-sep { display: none; }
       .form-row { grid-template-columns: 1fr; }
       .commitment-cards { grid-template-columns: 1fr 1fr; }
+      .review-links-bar { flex-direction: column; align-items: flex-start; }
+      .review-links-buttons { width: 100%; }
+      .review-btn { flex: 1; justify-content: center; }
     }
 
     @media (max-width: 768px) {
@@ -1550,6 +1754,7 @@
           <li><a href="#values">Our Values</a></li>
           <li><a href="#services">Services</a></li>
           <li><a href="#approach">Our Approach</a></li>
+          <li><a href="#testimonials">Testimonials</a></li>
           <li><a href="#insurance">Insurance</a></li>
           <li><a href="#contact" class="nav-cta">Get Help</a></li>
         </ul>
@@ -1567,6 +1772,7 @@
     <a href="#values" class="mobile-link">Our Values</a>
     <a href="#services" class="mobile-link">Services</a>
     <a href="#approach" class="mobile-link">Our Approach</a>
+    <a href="#testimonials" class="mobile-link">Testimonials</a>
     <a href="#insurance" class="mobile-link">Insurance</a>
     <a href="#contact" class="mobile-link" style="color: var(--red);">Get Help Today</a>
   </div>
@@ -1674,7 +1880,8 @@
           <p>
             Unique Nursing Care Management Services, LLC (UNCMS, LLC) is a substance abuse recovery
             organization dedicated to transforming the lives of individuals struggling with drug and/or alcohol
-            addiction. We believe recovery is possible for everyone.
+            addiction. We also address co-occurring mental health issues, providing integrated support for the
+            full spectrum of challenges residents face. We believe recovery is possible for everyone.
           </p>
           <p>
             We treat every individual with human decency — no matter if they are starting their recovery
@@ -1685,6 +1892,15 @@
             Our staff are trained to respond with empathy, cultural sensitivity, and a deep understanding of
             the complex factors that contribute to substance use disorders.
           </p>
+          <div class="about-program-badge fade-up">
+            <div class="about-program-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+            </div>
+            <div>
+              <div class="about-program-title">Residential 3.1 Program</div>
+              <div class="about-program-desc">We accept clients transitioning directly from inpatient treatment centers, providing a structured residential stepping stone for continued recovery.</div>
+            </div>
+          </div>
           <a href="#contact" class="btn btn-outline-dark" style="margin-top:12px;">
             Talk to Our Team
           </a>
@@ -1879,6 +2095,99 @@
             and a sense of inner peace on their journey to lasting change.
           </p>
           <span class="approach-step-tag">Purpose & Meaning</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials">
+    <div class="container" style="position:relative;z-index:1;">
+      <div class="testimonials-header fade-up">
+        <p class="tag">Voices of Recovery</p>
+        <h2 class="section-title">What Our <span>Residents Say</span></h2>
+        <div class="divider" style="margin:0 auto 28px;"></div>
+        <p class="section-sub" style="color:rgba(255,255,255,0.65);margin:0 auto;text-align:center;">
+          Real words from real people whose lives have been transformed through our holistic care.
+        </p>
+      </div>
+
+      <div class="testimonials-grid">
+
+        <div class="testimonial-card fade-up d1">
+          <div class="testimonial-stars">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+          <div class="testimonial-quote-mark">"</div>
+          <p class="testimonial-text">
+            UNCMS gave me back my life. The staff treated me with dignity from day one, and the
+            structured environment helped me build routines I never had before. I am now 14 months
+            clean and finally feel like myself again.
+          </p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">M</div>
+            <div>
+              <div class="testimonial-name">Marcus T.</div>
+              <div class="testimonial-role">Resident Graduate</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card fade-up d2">
+          <div class="testimonial-stars">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+          <div class="testimonial-quote-mark">"</div>
+          <p class="testimonial-text">
+            As a family member, watching my sister transform at UNCMS has been overwhelming in the
+            best way. The holistic approach — the counseling, the nursing care, the spiritual support —
+            addressed everything at once. The whole team truly cares.
+          </p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">D</div>
+            <div>
+              <div class="testimonial-name">Darlene W.</div>
+              <div class="testimonial-role">Family Member</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card fade-up d3">
+          <div class="testimonial-stars">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+          <div class="testimonial-quote-mark">"</div>
+          <p class="testimonial-text">
+            I came in broken. The 24/7 nursing support kept me safe during the hardest weeks,
+            and the counselors helped me understand the root of my struggles. UNCMS didn't just
+            treat my addiction — they treated me as a whole person.
+          </p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">R</div>
+            <div>
+              <div class="testimonial-name">Renee J.</div>
+              <div class="testimonial-role">Current Alumni</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Review Links Bar -->
+      <div class="review-links-bar fade-up">
+        <div class="review-links-text">
+          <h3>Share Your Experience or Read More Stories</h3>
+          <p>Your story matters — it could be the reason someone takes the first step toward recovery.</p>
+        </div>
+        <div class="review-links-buttons">
+          <a href="https://g.page/r/CXReviewLink/review" target="_blank" rel="noopener" class="review-btn review-btn-leave" aria-label="Leave a Google Review">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.545 10.239v3.821h5.445c-.712 2.315-2.647 3.972-5.445 3.972a6.033 6.033 0 1 1 0-12.064c1.498 0 2.866.549 3.921 1.453l2.814-2.814A9.969 9.969 0 0 0 12.545 2C7.021 2 2.543 6.477 2.543 12s4.478 10 10.002 10c8.396 0 10.249-7.85 9.426-11.748l-9.426-.013z"/></svg>
+            Leave a Review
+          </a>
+          <a href="https://www.google.com/search?q=Unique+Nursing+Care+Management+Services+LLC+reviews" target="_blank" rel="noopener" class="review-btn review-btn-read" aria-label="Read Reviews on Google">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 12.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>
+            Read All Reviews
+          </a>
         </div>
       </div>
     </div>
