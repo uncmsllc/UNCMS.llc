@@ -50,7 +50,7 @@ function testSetup() {
 
 
 /**
- * Handles POST requests from the website contact form.
+ * Handles POST requests from the website contact form and review modal.
  */
 function doPost(e) {
   try {
@@ -58,69 +58,124 @@ function doPost(e) {
     const data = JSON.parse(raw);
     Logger.log('doPost received: ' + raw);
 
-    const submittedAt = new Date();
+    if (data.type === 'review') {
+      return handleReviewSubmission(data);
+    }
 
-    const inquiryLabels = {
-      self:   'Themselves',
-      family: 'A Family Member',
-      friend: 'A Friend',
-      other:  'General Information',
-      '':     'Not specified'
-    };
-    const inquiryLabel = inquiryLabels[data.inquiry] || data.inquiry || 'Not specified';
-
-    // ── 1. Calendar event ────────────────────────────────────────────────
-    const calendar   = CalendarApp.getDefaultCalendar();
-    const eventStart = getFollowupDate(submittedAt, FOLLOWUP_DAYS_OUT);
-    eventStart.setHours(FOLLOWUP_HOUR, 0, 0, 0);
-    const eventEnd = new Date(eventStart.getTime() + FOLLOWUP_DURATION_MINUTES * 60 * 1000);
-
-    const eventTitle = 'Follow Up: ' + data.fname + ' ' + data.lname + ' — Inquiry';
-    const eventDescription = [
-      'NEW INQUIRY — UNCMS Website',
-      '',
-      'Name:           ' + data.fname + ' ' + data.lname,
-      'Phone:          ' + (data.phone   || 'Not provided'),
-      'Email:          ' + (data.email   || 'Not provided'),
-      'Inquiring for:  ' + inquiryLabel,
-      '',
-      'Message:',
-      data.message || '(No message provided)',
-      '',
-      'Submitted: ' + submittedAt.toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' ET'
-    ].join('\n');
-
-    calendar.createEvent(eventTitle, eventStart, eventEnd, { description: eventDescription });
-    Logger.log('Calendar event created: ' + eventTitle);
-
-    // ── 2. Email notification ────────────────────────────────────────────
-    const emailSubject = 'New Inquiry: ' + data.fname + ' ' + data.lname;
-    const emailBody = [
-      'A new inquiry was submitted through the UNCMS website.',
-      '',
-      'Name:          ' + data.fname + ' ' + data.lname,
-      'Phone:         ' + (data.phone   || 'Not provided'),
-      'Email:         ' + (data.email   || 'Not provided'),
-      'Inquiring for: ' + inquiryLabel,
-      '',
-      'Message:',
-      data.message || '(No message provided)',
-      '',
-      'Submitted: ' + submittedAt.toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' ET',
-      '',
-      '---',
-      'A follow-up reminder has been added to your Google Calendar.'
-    ].join('\n');
-
-    GmailApp.sendEmail(NOTIFICATION_EMAIL, emailSubject, emailBody);
-    Logger.log('Email sent to ' + NOTIFICATION_EMAIL);
-
-    return jsonResponse({ success: true });
+    return handleContactSubmission(data);
 
   } catch (err) {
     Logger.log('doPost error: ' + err.message);
     return jsonResponse({ success: false, error: err.message });
   }
+}
+
+
+/**
+ * Handles contact / inquiry form submissions.
+ */
+function handleContactSubmission(data) {
+  const submittedAt = new Date();
+
+  const inquiryLabels = {
+    self:   'Themselves',
+    family: 'A Family Member',
+    friend: 'A Friend',
+    other:  'General Information',
+    '':     'Not specified'
+  };
+  const inquiryLabel = inquiryLabels[data.inquiry] || data.inquiry || 'Not specified';
+
+  // ── 1. Calendar event ────────────────────────────────────────────────
+  const calendar   = CalendarApp.getDefaultCalendar();
+  const eventStart = getFollowupDate(submittedAt, FOLLOWUP_DAYS_OUT);
+  eventStart.setHours(FOLLOWUP_HOUR, 0, 0, 0);
+  const eventEnd = new Date(eventStart.getTime() + FOLLOWUP_DURATION_MINUTES * 60 * 1000);
+
+  const eventTitle = 'Follow Up: ' + data.fname + ' ' + data.lname + ' — Inquiry';
+  const eventDescription = [
+    'NEW INQUIRY — UNCMS Website',
+    '',
+    'Name:           ' + data.fname + ' ' + data.lname,
+    'Phone:          ' + (data.phone   || 'Not provided'),
+    'Email:          ' + (data.email   || 'Not provided'),
+    'Inquiring for:  ' + inquiryLabel,
+    '',
+    'Message:',
+    data.message || '(No message provided)',
+    '',
+    'Submitted: ' + submittedAt.toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' ET'
+  ].join('\n');
+
+  calendar.createEvent(eventTitle, eventStart, eventEnd, { description: eventDescription });
+  Logger.log('Calendar event created: ' + eventTitle);
+
+  // ── 2. Email notification ────────────────────────────────────────────
+  const emailSubject = 'New Inquiry: ' + data.fname + ' ' + data.lname;
+  const emailBody = [
+    'A new inquiry was submitted through the UNCMS website.',
+    '',
+    'Name:          ' + data.fname + ' ' + data.lname,
+    'Phone:         ' + (data.phone   || 'Not provided'),
+    'Email:         ' + (data.email   || 'Not provided'),
+    'Inquiring for: ' + inquiryLabel,
+    '',
+    'Message:',
+    data.message || '(No message provided)',
+    '',
+    'Submitted: ' + submittedAt.toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' ET',
+    '',
+    '---',
+    'A follow-up reminder has been added to your Google Calendar.'
+  ].join('\n');
+
+  GmailApp.sendEmail(NOTIFICATION_EMAIL, emailSubject, emailBody);
+  Logger.log('Email sent to ' + NOTIFICATION_EMAIL);
+
+  return jsonResponse({ success: true });
+}
+
+
+/**
+ * Handles review submissions from the website review modal.
+ * Sends an approval email to NOTIFICATION_EMAIL — no calendar event needed.
+ */
+function handleReviewSubmission(data) {
+  const submittedAt = new Date();
+  const stars       = '★'.repeat(data.rating || 0) + '☆'.repeat(5 - (data.rating || 0));
+
+  const emailSubject = 'New Review Pending Approval — ' + (data.name || 'Anonymous');
+  const emailBody = [
+    'A new resident review has been submitted on the UNCMS website and is awaiting your approval.',
+    '',
+    '══════════════════════════════════════════',
+    'REVIEW DETAILS',
+    '══════════════════════════════════════════',
+    '',
+    'Name:       ' + (data.name   || 'Not provided'),
+    'Role:       ' + (data.role   || 'Not provided'),
+    'Rating:     ' + stars + ' (' + (data.rating || 0) + '/5)',
+    '',
+    'Review:',
+    data.review || '(No review text provided)',
+    '',
+    'Submitted:  ' + submittedAt.toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' ET',
+    '',
+    '══════════════════════════════════════════',
+    'ACTION REQUIRED',
+    '══════════════════════════════════════════',
+    '',
+    'To publish this review on the UNCMS website, add it to the testimonials',
+    'section in index.html and redeploy. To decline, simply ignore this email.',
+    '',
+    '---',
+    'UNCMS Website — Automated Review Notification'
+  ].join('\n');
+
+  GmailApp.sendEmail(NOTIFICATION_EMAIL, emailSubject, emailBody);
+  Logger.log('Review approval email sent to ' + NOTIFICATION_EMAIL + ' for: ' + data.name);
+
+  return jsonResponse({ success: true });
 }
 
 
