@@ -7,7 +7,7 @@
  *        GITHUB_TOKEN  →  a GitHub Personal Access Token with "repo" scope
  *                         (create at github.com → Settings → Developer settings
  *                          → Personal access tokens → Tokens (classic))
- *   2. Run testSetup() to authorize Gmail / Calendar and verify everything works.
+ *   2. Run testSetup() to authorize MailApp / Calendar and verify everything works.
  *   3. Deploy → New deployment (Web app, Execute as: Me, Access: Anyone).
  *   4. Paste the new /exec URL into index.html as APPS_SCRIPT_URL and push.
  */
@@ -125,7 +125,7 @@ function handleContactSubmission(data) {
     'A follow-up reminder has been added to your Google Calendar.'
   ].join('\n');
 
-  GmailApp.sendEmail(NOTIFICATION_EMAIL, subject, body);
+  MailApp.sendEmail(NOTIFICATION_EMAIL, subject, body);
   Logger.log('Contact email sent to ' + NOTIFICATION_EMAIL);
 
   return jsonResponse({ success: true });
@@ -187,7 +187,7 @@ function handleReviewSubmission(data) {
     '</div>'
   ].join('\n');
 
-  GmailApp.sendEmail(NOTIFICATION_EMAIL, subject, '', { htmlBody: htmlBody });
+  MailApp.sendEmail(NOTIFICATION_EMAIL, subject, '', { htmlBody: htmlBody });
   Logger.log('Review approval email sent to ' + NOTIFICATION_EMAIL + ' (id: ' + reviewId + ')');
 
   return jsonResponse({ success: true });
@@ -320,7 +320,7 @@ function approveReview(reviewId) {
   Logger.log('Review approved and pushed to GitHub: ' + review.name);
 
   // ── Notify owner ─────────────────────────────────────────────────────
-  GmailApp.sendEmail(
+  MailApp.sendEmail(
     NOTIFICATION_EMAIL,
     '✅ Review Published — ' + review.name,
     'The review from ' + review.name + ' has been approved, committed to GitHub, and is now deploying to the UNCMS website.'
@@ -366,7 +366,7 @@ function declineReview(reviewId) {
 // ══════════════════════════════════════════════════════════════════════════
 
 /**
- * RUN THIS FIRST from the Apps Script editor to authorize Gmail + Calendar
+ * RUN THIS FIRST from the Apps Script editor to authorize MailApp + Calendar
  * and verify the GitHub token is working.
  */
 function testSetup() {
@@ -382,12 +382,12 @@ function testSetup() {
     Logger.log('✅ Calendar: test event created');
 
     // ── Gmail ───────────────────────────────────────────────────────────
-    GmailApp.sendEmail(
+    MailApp.sendEmail(
       NOTIFICATION_EMAIL,
       'TEST — UNCMS Form Handler is connected',
       'This confirms the form handler is authorized and working.\nYou can ignore this message.'
     );
-    Logger.log('✅ Email: test sent to ' + NOTIFICATION_EMAIL);
+    Logger.log('✅ MailApp: test sent to ' + NOTIFICATION_EMAIL);
 
     // ── GitHub token ────────────────────────────────────────────────────
     const token = PropertiesService.getScriptProperties().getProperty('GITHUB_TOKEN');
